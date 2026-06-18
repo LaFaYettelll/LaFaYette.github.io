@@ -67,15 +67,15 @@
             <!-- 链接 1 -->
             <div class="overflow-visible">
                 <span class="block text-[#a3a3a3] mb-2 uppercase tracking-wider">// PLATFORMS</span>
-                <div class="relative inline-flex gap-6 overflow-visible">
-                    <a href="#" class="peer/douyin hover:text-[#f5f5f5] transition-colors">DOUYIN</a>
-                    <a href="#" class="peer/wechat hover:text-[#f5f5f5] transition-colors">WECHAT</a>
-                    <div class="absolute bottom-full left-0 mb-3 w-full opacity-0 invisible peer-hover/douyin:opacity-100 peer-hover/douyin:visible transition-all duration-300 translate-y-2 peer-hover/douyin:translate-y-0 pointer-events-none z-20">
+                <div class="relative inline-flex gap-6 overflow-visible platform-links">
+                    <button type="button" data-platform="douyin" class="peer/douyin hover:text-[#f5f5f5] transition-colors cursor-pointer bg-transparent border-0 p-0 font-inherit text-inherit">DOUYIN</button>
+                    <button type="button" data-platform="wechat" class="peer/wechat hover:text-[#f5f5f5] transition-colors cursor-pointer bg-transparent border-0 p-0 font-inherit text-inherit">WECHAT</button>
+                    <div data-qr="douyin" class="platform-qr absolute bottom-full left-0 mb-3 w-full opacity-0 invisible peer-hover/douyin:opacity-100 peer-hover/douyin:visible transition-all duration-300 translate-y-2 peer-hover/douyin:translate-y-0 pointer-events-none z-20">
                         <div class="relative w-full pt-[100%] border border-[#262626] bg-[#0a0a0a] overflow-hidden">
                             <img src="douyin.png" alt="Douyin QR Code" class="absolute inset-0 size-full object-cover max-w-none">
                         </div>
                     </div>
-                    <div class="absolute bottom-full left-0 mb-3 w-full opacity-0 invisible peer-hover/wechat:opacity-100 peer-hover/wechat:visible transition-all duration-300 translate-y-2 peer-hover/wechat:translate-y-0 pointer-events-none z-20">
+                    <div data-qr="wechat" class="platform-qr absolute bottom-full left-0 mb-3 w-full opacity-0 invisible peer-hover/wechat:opacity-100 peer-hover/wechat:visible transition-all duration-300 translate-y-2 peer-hover/wechat:translate-y-0 pointer-events-none z-20">
                         <div class="relative w-full pt-[100%] border border-[#262626] bg-[#0a0a0a] overflow-hidden">
                             <img src="wechat.png" alt="WeChat QR Code" class="absolute inset-0 size-full object-cover max-w-none">
                         </div>
@@ -96,6 +96,52 @@
         </footer>
 
         </div>
+
+    <script>
+        (function () {
+            const platformLinks = document.querySelector('.platform-links');
+            if (!platformLinks) return;
+
+            const qrs = platformLinks.querySelectorAll('.platform-qr');
+            const buttons = platformLinks.querySelectorAll('[data-platform]');
+
+            function closeAll() {
+                qrs.forEach((qr) => qr.classList.remove('is-open'));
+                buttons.forEach((btn) => btn.classList.remove('text-[#f5f5f5]'));
+            }
+
+            function openQr(name) {
+                const qr = platformLinks.querySelector(`[data-qr="${name}"]`);
+                const btn = platformLinks.querySelector(`[data-platform="${name}"]`);
+                if (!qr) return;
+                closeAll();
+                qr.classList.add('is-open');
+                btn?.classList.add('text-[#f5f5f5]');
+            }
+
+            buttons.forEach((btn) => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const name = btn.dataset.platform;
+                    const qr = platformLinks.querySelector(`[data-qr="${name}"]`);
+                    if (qr?.classList.contains('is-open')) {
+                        closeAll();
+                    } else {
+                        openQr(name);
+                    }
+                });
+            });
+
+            document.addEventListener('click', () => closeAll());
+        })();
+    </script>
+    <style>
+        .platform-qr.is-open {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+    </style>
 
 </body>
 </html>
