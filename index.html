@@ -1,41 +1,101 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" class="h-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LaFaYette Space</title>
     <meta name="description" content="Yette的个人静态网页，分享电商、AI及数字化内容。">
+    <link rel="icon" href="logo1.png" type="image/png">
+    <link rel="apple-touch-icon" href="logo1.png">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
-<body class="bg-slate-950 text-slate-50 min-h-screen flex items-center justify-center font-sans selection:bg-emerald-500 selection:text-slate-900">
+<body class="bg-[#0a0a0a] text-[#f5f5f5] font-sans antialiased selection:bg-[#f5f5f5] selection:text-[#0a0a0a] h-full min-h-screen">
 
-    <main class="max-w-md w-full mx-4 p-8 rounded-2xl bg-slate-900/80 backdrop-blur-md border border-slate-700 shadow-2xl text-center hover:border-emerald-500 transition-all duration-500 group">
-        
-        <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-tr from-emerald-400 to-cyan-400 flex items-center justify-center shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform duration-500">
-            <span class="text-3xl" role="img" aria-label="rocket">🚀</span>
+    <!-- 全局包装器：控制Studio Rotate标志性的宽边距留白 -->
+    <div class="h-full min-h-screen p-6 md:p-12 lg:p-20 flex flex-col justify-between">
+
+        <!-- ==================== HEADER (顶部导航与状态) ==================== -->
+        <header class="w-full flex justify-between items-start border-b border-[#262626] pb-6 mb-16">
+            <div>
+                <!-- 标志性的大字重、全大写纯文字Logo -->
+                <h1 class="text-xl md:text-2xl font-black tracking-tighter">YETTE®</h1>
+                <p class="text-xs text-[#737373] mt-1 tracking-widest font-mono">DESIGNS & E-COMMERCE</p>
+            </div>
+            <div class="text-right font-mono text-xs text-[#a3a3a3] space-y-1">
+                <div>[ STATUS : ACTIVE ]</div>
+                <div class="text-[#737373]">EST. 2026</div>
+            </div>
+        </header>
+
+        <!-- ==================== MAIN CONTENT (核心视觉与宣言) ==================== -->
+        <main class="flex-grow flex flex-col justify-center max-w-5xl">
+            <!-- Studio Rotate 核心：震撼人心的巨型排版 -->
+            <h2 class="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight leading-none uppercase mb-12">
+                Shaping the <br>
+                <span class="text-[#737373] hover:text-[#f5f5f5] transition-colors duration-500">future visual</span> <br>
+                environments.
+            </h2>
+
+            <!-- 网格化内容区：2列布局（左：简介 / 右：核心方向） -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 border-t border-[#262626] pt-8 max-w-4xl">
+                <div>
+                    <p class="text-base md:text-lg text-[#d4d4d4] leading-relaxed font-light">
+                        通过一点点技术、高级包装美学与数字化媒介，构建品牌在线上生态的极致视觉体验。不随波逐流，也不定义规则。
+                    </p>
         </div>
 
-        <h1 class="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent mb-2">
-            Yette Digital Space
-        </h1>
-        <p class="text-slate-300 text-sm mb-6 font-medium">Toy's 助理为您驱动 · 极致优化版</p>
+                <!-- 核心方向（带交互的标签） -->
+                <div class="space-y-4 font-mono text-sm">
+                    <div class="flex items-center justify-between border-b border-[#171717] pb-2 group cursor-pointer">
+                        <span class="text-[#737373] group-hover:text-[#f5f5f5] transition-colors">01 / COMFYUI ENVIRONMENT</span>
+                        <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">⚡</span>
+                    </div>
+                    <div class="flex items-center justify-between border-b border-[#171717] pb-2 group cursor-pointer">
+                        <span class="text-[#737373] group-hover:text-[#f5f5f5] transition-colors">02 / DESIGN & ART DIRECTIONs</span>
+                        <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">🥃</span>
+                    </div>
+                    <div class="flex items-center justify-between border-b border-[#171717] pb-2 group cursor-pointer">
+                        <span class="text-[#737373] group-hover:text-[#f5f5f5] transition-colors">03 / DIGITAL HUMAN LABS</span>
+                        <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">👤</span>
+                    </div>
+                </div>
+            </div>
+        </main>
 
-        <div class="space-y-3 text-left bg-slate-950 p-4 rounded-xl border border-slate-800 mb-6">
-            <div class="flex justify-between text-xs">
-                <span class="text-slate-400 font-medium">环境状态</span>
-                <span class="text-emerald-400 font-mono font-bold">Production Ready</span>
+        <!-- ==================== FOOTER (底部链接与行动呼吁) ==================== -->
+        <footer class="w-full grid grid-cols-1 md:grid-cols-3 gap-8 border-t border-[#262626] pt-8 mt-20 text-xs font-mono text-[#737373]">
+            <!-- 链接 1 -->
+            <div class="overflow-visible">
+                <span class="block text-[#a3a3a3] mb-2 uppercase tracking-wider">// PLATFORMS</span>
+                <div class="relative inline-flex gap-6 overflow-visible">
+                    <a href="#" class="peer/douyin hover:text-[#f5f5f5] transition-colors">DOUYIN</a>
+                    <a href="#" class="peer/wechat hover:text-[#f5f5f5] transition-colors">WECHAT</a>
+                    <div class="absolute bottom-full left-0 mb-3 w-full opacity-0 invisible peer-hover/douyin:opacity-100 peer-hover/douyin:visible transition-all duration-300 translate-y-2 peer-hover/douyin:translate-y-0 pointer-events-none z-20">
+                        <div class="relative w-full pt-[100%] border border-[#262626] bg-[#0a0a0a] overflow-hidden">
+                            <img src="douyin.png" alt="Douyin QR Code" class="absolute inset-0 size-full object-cover max-w-none">
+                        </div>
+                    </div>
+                    <div class="absolute bottom-full left-0 mb-3 w-full opacity-0 invisible peer-hover/wechat:opacity-100 peer-hover/wechat:visible transition-all duration-300 translate-y-2 peer-hover/wechat:translate-y-0 pointer-events-none z-20">
+                        <div class="relative w-full pt-[100%] border border-[#262626] bg-[#0a0a0a] overflow-hidden">
+                            <img src="wechat.png" alt="WeChat QR Code" class="absolute inset-0 size-full object-cover max-w-none">
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="flex justify-between text-xs">
-                <span class="text-slate-400 font-medium">加载速度</span>
-                <span class="text-cyan-400 font-mono font-bold">⚡ Blazing Fast</span>
+            <!-- 链接 2 -->
+            <div>
+                <span class="block text-[#a3a3a3] mb-2 uppercase tracking-wider">// CODE LABS</span>
+                <a href="https://github.com/LaFaYettelll" target="_blank" class="hover:text-[#f5f5f5] transition-colors underline decoration-[#404040] hover:decoration-[#f5f5f5]">
+                    GITHUB.COM/LAFAYETTELLL
+                </a>
             </div>
+            <!-- 版权声明 -->
+            <div class="md:text-right flex flex-col justify-end">
+                <p>© 2026 YETTE. POWERED BY TOY'S. ALL RIGHTS RESERVED.</p>
+            </div>
+        </footer>
+
         </div>
-
-        <a href="https://github.com" target="_blank" class="block w-full py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-400 to-cyan-400 text-slate-950 font-bold text-sm shadow-lg shadow-cyan-500/20 hover:opacity-90 active:scale-[0.98] transition-all">
-            探索我的项目
-        </a>
-        
-    </main>
 
 </body>
 </html>
