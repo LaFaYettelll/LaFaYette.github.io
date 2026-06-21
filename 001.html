@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LAFAYETTE®</title>
+    <link rel="icon" href="logo1.png" type="image/png">
+    <link rel="apple-touch-icon" href="logo1.png">
+    <!-- 引入Tailwind CSS以兼容index.html的样式 -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        :root {
+            --color-banker-navy: #0A1733;
+            --color-royal: #15294D;
+            --color-antique-gold: #B8862F;
+            --color-parchment: #E8E1D0;
+            --color-black: #050A14;
+            --color-white: #FFFFFF;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--color-banker-navy);
+            color: var(--color-parchment);
+            font-family: 'Courier New', Courier, monospace;
+            /* 移除overflow:hidden，避免头部/底部被截断 */
+            height: 100vh;
+            display: flex;
+            flex-direction: column; /* 改为列布局，容纳header/main/footer */
+            justify-content: space-between; /* 头部和底部固定上下，中间居中 */
+            position: relative;
+        }
+
+        /* 全局初始全屏隐形交互触发层 */
+        .interaction-trigger {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            z-index: 99;
+            cursor: pointer;
+            background: transparent;
+        }
+
+        /* ================= 阶段一：开场动画 ================= */
+        .stage-intro {
+            text-align: center;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            display: block;
+            z-index: 10;
+            transform-origin: center center;
+            user-select: none;
+            pointer-events: none; /* 初始阶段文字不阻挡点击 */
+        }
+
+        /* 2秒蓄力拉伸坍缩 */
+        .intro-stretch-elastic {
+            animation: stretchElastic 2s cubic-bezier(0.25, 1, 0.2, 1) forwards;
+        }
+
+        @keyframes stretchElastic {
+            0% {
+                transform: translate(-50%, -50%) scaleX(1) scaleY(1);
+                filter: blur(0);
+                opacity: 1;
+            }
+            70% {
+                transform: translate(-50%, -50%) scaleX(1.5) scaleY(0.7);
+                filter: blur(1px);
+                opacity: 0.9;
+            }
+            100% {
+                transform: translate(-50%, -50%) scaleX(0) scaleY(0);
+                filter: blur(8px);
+                opacity: 0;
+                display: none;
+            }
+        }
+
+        /* 条形码与下方文字区域绝对等宽 380px */
+        .barcode-container {
+            position: relative;
+            width: 380px; 
+            height: 70px;
+            background: repeating-linear-gradient(90deg, 
+                var(--color-antique-gold), 
+                var(--color-antique-gold) 3px, 
+                transparent 3px, 
+                transparent 9px
+            );
+            margin: 0 auto 40px auto;
+            opacity: 1;
+        }
+
+        .barcode-container::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background-color: var(--color-parchment);
+            left: 0;
+            top: 0;
+            box-shadow: 0 0 8px var(--color-parchment);
+            animation: scanLine 2s infinite ease-in-out;
+        }
+
+        @keyframes scanLine {
+            0% { top: 0; }
+            50% { top: 100%; }
+            100% { top: 0; }
+        }
+
+        /* 1. 文字容器优化：LAFAYETTE 保持一个词，| 前后加精准空格，完美等宽布局 */
+        .text-timeline {
+            font-size: 2.1rem;
+            font-weight: 900; /* 文字极致加粗 */
+            width: 380px;    /* 严格与条形码等宽 */
+            margin: 0 auto;
+            display: flex;
+            justify-content: center; /* 居中紧凑排列，避免扯出大空格 */
+            align-items: center;
+            height: 50px;
+            color: var(--color-parchment);
+            letter-spacing: 1px;
+        }
+
+        .char {
+            opacity: 0;
+            display: inline-block;
+        }
+
+        /* 保持文字的原生时序延迟加载 */
+        .char.lafa { animation: fadeInChar 0.01s 1s forwards; }
+        .char.yette { animation: fadeInChar 0.01s 2s forwards; }
+        .char.pipe { 
+            animation: fadeInChar 0.01s 3s forwards, blinkPipe 0.5s infinite 3s; 
+            margin: 0 10px; /* 精准控制 | 字符前后的微距间隙 */
+            color: var(--color-antique-gold); /* 提亮符号视觉 */
+        }
+        .char.space { animation: fadeInChar 0.01s 4s forwards; letter-spacing: 4px; }
+
+        @keyframes fadeInChar { to { opacity: 1; } }
+        @keyframes blinkPipe { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
+
+
+        /* ================= 阶段二：Glitch 故障与 Twerk 振动层 ================= */
+        .stage-glitch {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            text-align: center;
+            opacity: 0;
+            display: none;
+            z-index: 5;
+            transform-origin: center center;
+            user-select: none;
+        }
+
+        .glitch-active {
+            display: block;
+            animation: fadeInGlitch 0.1s forwards, stretchElastic 2s cubic-bezier(0.25, 1, 0.2, 1) forwards;
+        }
+
+        @keyframes fadeInGlitch { to { opacity: 1; } }
+
+        .glitch-text {
+            font-size: 3rem;
+            font-weight: 900;
+            letter-spacing: 8px;
+            position: relative;
+            color: var(--color-parchment);
+            animation: twerkAnim 0.15s infinite;
+        }
+
+        .glitch-text::before,
+        .glitch-text::after {
+            content: 'LaFaYette|SPACE';
+            position: absolute;
+            left: 0; top: 0; width: 100%;
+            background: var(--color-banker-navy);
+        }
+        .glitch-text::before {
+            color: var(--color-antique-gold);
+            animation: glitchSplit1 0.2s infinite linear alternate-reverse;
+        }
+        .glitch-text::after {
+            color: var(--color-royal);
+            animation: glitchSplit2 0.2s infinite linear alternate-reverse;
+        }
+
+        @keyframes twerkAnim {
+            0% { transform: translate(0); }
+            25% { transform: translate(-4px, 3px); }
+            50% { transform: translate(4px, -3px); }
+            75% { transform: translate(-2px, -4px); }
+            100% { transform: translate(0); }
+        }
+        @keyframes glitchSplit1 {
+            0% { clip-path: inset(15% 0 45% 0); transform: skew(-5deg); }
+            100% { clip-path: inset(55% 0 10% 0); transform: skew(3deg); }
+        }
+        @keyframes glitchSplit2 {
+            0% { clip-path: inset(45% 0 15% 0); transform: skew(5deg); }
+            100% { clip-path: inset(5% 0 80% 0); transform: skew(-3deg); }
+        }
+
+
+        /* ================= 阶段三 & 四：像素弹珠跳动点与侧拉菜单 ================= */
+        .stage-menu {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 30;
+            opacity: 0;
+            display: none;
+            text-align: center;
+        }
+
+        .menu-ready {
+            display: block;
+            animation: fadeInMenu 0.01s forwards;
+        }
+        @keyframes fadeInMenu { to { opacity: 1; } }
+
+        /* 初始锚定为 39px 纯白圆点 */
+        .pixel-dot-menu {
+            width: 39px;
+            height: 39px;
+            background-color: var(--color-white);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+            position: relative;
+            margin: 0 auto;
+            overflow: hidden; 
+            
+            /* 平滑变形核心过渡 */
+            transition: width 0.5s cubic-bezier(0.77, 0, 0.175, 1), 
+                        height 0.5s cubic-bezier(0.77, 0, 0.175, 1),
+                        border-radius 0.3s ease, 
+                        background-color 0.4s ease,
+                        border-color 0.3s ease;
+        }
+
+        /* 弹珠 2.5 秒回弹动画 */
+        .run-bounce {
+            animation: marbleBounce 2.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        @keyframes marbleBounce {
+            0% { width: 20px; height: 20px; }
+            15% { width: 60px; height: 60px; }
+            30% { width: 14px; height: 14px; }
+            45% { width: 34px; height: 34px; }
+            60% { width: 22px; height: 22px; }
+            75% { width: 38px; height: 38px; }
+            90% { width: 35px; height: 35px; }
+            100% { width: 39px; height: 39px; }
+        }
+
+        .menu-logo-placeholder {
+            font-size: 9px;
+            font-weight: bold;
+            color: var(--color-banker-navy);
+            letter-spacing: 0;
+            white-space: nowrap;
+            position: absolute;
+            z-index: 2;
+            opacity: 0;
+        }
+        .logo-visible {
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+
+        /* 二级菜单容器：横向侧拉扩展空间 */
+        .sub-menu-panel {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+            white-space: nowrap;
+            position: relative;
+            z-index: 1;
+        }
+
+        .sub-menu-panel a {
+            color: var(--color-parchment);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            opacity: 0;
+            transform: translateX(-15px);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .sub-menu-panel a:hover {
+            color: var(--color-antique-gold);
+        }
+
+        /* 3. 点击圆点展开：等高 39px，横向平滑拉伸至 380px 宽度 */
+        .pixel-dot-menu.expanded {
+            animation: none !important; 
+            width: 380px !important; /* 精准限制在 380px 宽度 */
+            height: 39px !important; /* 强制保持等高 39px */
+            border-radius: 4px; 
+            background-color: var(--color-royal);
+            border: 1px solid var(--color-antique-gold);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+            cursor: default;
+        }
+
+        .pixel-dot-menu.expanded .menu-logo-placeholder {
+            opacity: 0 !important;
+            pointer-events: none;
+        }
+
+        .pixel-dot-menu.expanded .sub-menu-panel {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .pixel-dot-menu.expanded .sub-menu-panel a {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .pixel-dot-menu.expanded .sub-menu-panel a:nth-child(1) { transition-delay: 0.2s; }
+        .pixel-dot-menu.expanded .sub-menu-panel a:nth-child(2) { transition-delay: 0.3s; }
+        .pixel-dot-menu.expanded .sub-menu-panel a:nth-child(3) { transition-delay: 0.4s; }
+
+        /* 防误触点击外部隐形遮罩 */
+        .click-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            z-index: 25;
+            display: none;
+            background: transparent;
+        }
+        .click-overlay.active {
+            display: block;
+        }
+
+        /* 兼容index.html的样式调整 */
+        header, footer {
+            z-index: 1; /* 保证头部底部在动画层下方，不遮挡交互 */
+            position: relative;
+        }
+        .platform-qr.is-open {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- 全局交互触发层 -->
+    <div class="interaction-trigger" onclick="handleGlobalClick(this)"></div>
+    <!-- 菜单遮罩层 -->
+    <div class="click-overlay" id="menuOverlay" onclick="closeMenu(event)"></div>
+
+    <!-- 引入index.html的头部 -->
+    <header class="w-full flex justify-between items-start border-b border-[#262626] pb-6 mb-4 p-6 md:p-12 lg:p-20">
+        <div>
+            <h1 class="text-xl md:text-2xl font-black tracking-tighter text-[#f5f5f5]">YETTE®</h1>
+            <p class="text-xs text-[#737373] mt-1 tracking-widest font-mono">DESIGNS & E-COMMERCE</p>
+        </div>
+        <div class="text-right font-mono text-xs text-[#a3a3a3] space-y-1">
+            <div>[ STATUS : ACTIVE ]</div>
+            <div class="text-[#737373]">EST. 2026</div>
+        </div>
+    </header>
+
+    <!-- 核心动画区域（原有001.html的中间内容） -->
+    <div class="flex-grow flex items-center justify-center">
+        <div class="stage-intro" id="introStage">
+            <div class="barcode-container"></div>
+            <div class="text-timeline">
+                <span class="char lafa">LAFA</span>
+                <span class="char yette">YETTE®</span>
+                <span class="char pipe">|</span>
+                <span class="char space">SPACE</span>
+            </div>
+        </div>
+
+        <div class="stage-glitch" id="glitchStage">
+            <div class="glitch-text">LAFAYETTE®|SPACE</div>
+        </div>
+
+        <div class="stage-menu" id="menuStage">
+            <div class="pixel-dot-menu" id="pixelMenu" onclick="expandMenu(event)">
+                <span class="menu-logo-placeholder" id="menuLogo">MENU</span>
+                
+                <div class="sub-menu-panel" id="subMenuPanel">
+                    <a href="#Large">Large</a>
+                    <a href="#Fabric">Fabric</a>
+                    <a href="#Yette">Yette</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 引入index.html的底部 -->
+    <footer class="w-full grid grid-cols-1 md:grid-cols-3 gap-8 border-t border-[#262626] pt-8 mt-4 p-6 md:p-12 lg:p-20 text-xs font-mono text-[#737373]">
+        <div class="overflow-visible">
+            <span class="block text-[#a3a3a3] mb-2 uppercase tracking-wider">// PLATFORMS</span>
+            <div class="relative inline-flex gap-6 overflow-visible platform-links">
+                <button type="button" data-platform="douyin" class="peer/douyin hover:text-[#f5f5f5] transition-colors cursor-pointer bg-transparent border-0 p-0 font-inherit text-inherit">DOUYIN</button>
+                <button type="button" data-platform="wechat" class="peer/wechat hover:text-[#f5f5f5] transition-colors cursor-pointer bg-transparent border-0 p-0 font-inherit text-inherit">WECHAT</button>
+                <div data-qr="douyin" class="platform-qr absolute bottom-full left-0 mb-3 w-full opacity-0 invisible peer-hover/douyin:opacity-100 peer-hover/douyin:visible transition-all duration-300 translate-y-2 peer-hover/douyin:translate-y-0 pointer-events-none z-20">
+                    <div class="relative w-full pt-[100%] border border-[#262626] bg-[#0a0a0a] overflow-hidden">
+                        <img src="douyin.png" alt="Douyin QR Code" class="absolute inset-0 size-full object-cover max-w-none">
+                    </div>
+                </div>
+                <div data-qr="wechat" class="platform-qr absolute bottom-full left-0 mb-3 w-full opacity-0 invisible peer-hover/wechat:opacity-100 peer-hover/wechat:visible transition-all duration-300 translate-y-2 peer-hover/wechat:translate-y-0 pointer-events-none z-20">
+                    <div class="relative w-full pt-[100%] border border-[#262626] bg-[#0a0a0a] overflow-hidden">
+                        <img src="wechat.png" alt="WeChat QR Code" class="absolute inset-0 size-full object-cover max-w-none">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="md:text-center">
+            <span class="block text-[#a3a3a3] mb-2 uppercase tracking-wider">// CODE LABS</span>
+            <a href="https://github.com/LaFaYettelll" target="_blank" class="hover:text-[#f5f5f5] transition-colors underline decoration-[#404040] hover:decoration-[#f5f5f5]">
+                GITHUB.COM/LAFAYETTELLL
+            </a>
+        </div>
+        <div class="md:text-right flex flex-col justify-end">
+            <p>© 2026 YETTE. POWERED BY TOY'S. ALL RIGHTS RESERVED.</p>
+        </div>
+    </footer>
+
+    <script>
+        let currentDotSize = 39; // 3. 生长型变量：圆点基础初始直径像素值
+
+        // 2. 点击页面任意非阻塞区域激发一二层融合动效
+        function handleGlobalClick(triggerElement) {
+            // 点击后立即自我销毁触发器，把全屏交互权转让给菜单和遮罩，防止事件死锁
+            triggerElement.remove();
+            
+            // 立即启动 2 秒拉伸和故障压缩坍缩
+            document.getElementById('introStage').classList.add('intro-stretch-elastic');
+            document.getElementById('glitchStage').classList.add('glitch-active');
+
+            // 2 秒蓄力坍缩结束，精准切入弹珠高频释放动画
+            setTimeout(() => {
+                const menuStage = document.getElementById('menuStage');
+                const pixelMenu = document.getElementById('pixelMenu');
+                const menuLogo = document.getElementById('menuLogo');
+
+                menuStage.classList.add('menu-ready');
+                pixelMenu.classList.add('run-bounce');
+
+                // 2.5 秒弹跳完全稳定，展现 MENU 字符
+                setTimeout(() => {
+                    pixelMenu.classList.remove('run-bounce');
+                    pixelMenu.style.width = currentDotSize + 'px';
+                    pixelMenu.style.height = currentDotSize + 'px';
+                    menuLogo.classList.add('logo-visible');
+                }, 2500);
+
+            }, 2000);
+        }
+
+        const menu = document.getElementById('pixelMenu');
+        const overlay = document.getElementById('menuOverlay');
+
+        // 点击圆点展开 380px 等高二级菜单
+        function expandMenu(event) {
+            if (event.target.tagName === 'A') return;
+            event.stopPropagation(); // 严格切断冒泡，防止误触发收回
+            
+            if (!menu.classList.contains('expanded')) {
+                menu.classList.add('expanded');
+                overlay.classList.add('active');
+            }
+        }
+
+        // 点击菜单外部（遮罩层）触发：平滑等高收回并增长体积
+        function closeMenu(event) {
+            event.stopPropagation();
+            menu.classList.remove('expanded');
+            overlay.classList.remove('active');
+
+            // 3. 停留首页闭包：每次点击菜单外部收回，圆点像素体积递增 9px，最大卡死在 199px
+            if (currentDotSize < 199) {
+                currentDotSize += 9;
+                if (currentDotSize > 199) currentDotSize = 199;
+            }
+
+            // 瞬间应用递增后的新宽高尺寸，圆点越变越大
+            setTimeout(() => {
+                menu.style.width = currentDotSize + 'px';
+                menu.style.height = currentDotSize + 'px';
+            }, 50);
+        }
+
+        // index.html原有二维码交互逻辑
+        (function () {
+            const platformLinks = document.querySelector('.platform-links');
+            if (!platformLinks) return;
+
+            const qrs = platformLinks.querySelectorAll('.platform-qr');
+            const buttons = platformLinks.querySelectorAll('[data-platform]');
+
+            function closeAll() {
+                qrs.forEach((qr) => qr.classList.remove('is-open'));
+                buttons.forEach((btn) => btn.classList.remove('text-[#f5f5f5]'));
+            }
+
+            function openQr(name) {
+                const qr = platformLinks.querySelector(`[data-qr="${name}"]`);
+                const btn = platformLinks.querySelector(`[data-platform="${name}"]`);
+                if (!qr) return;
+                closeAll();
+                qr.classList.add('is-open');
+                btn?.classList.add('text-[#f5f5f5]');
+            }
+
+            buttons.forEach((btn) => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const name = btn.dataset.platform;
+                    const qr = platformLinks.querySelector(`[data-qr="${name}"]`);
+                    if (qr?.classList.contains('is-open')) {
+                        closeAll();
+                    } else {
+                        openQr(name);
+                    }
+                });
+            });
+
+            document.addEventListener('click', () => closeAll());
+        })();
+    </script>
+</body>
+</html>

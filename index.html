@@ -1,147 +1,937 @@
 <!DOCTYPE html>
-<html lang="zh-CN" class="h-full">
+<html lang="la">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LaFaYette Space</title>
-    <meta name="description" content="Yette的个人静态网页，分享电商、AI及数字化内容。">
-    <link rel="icon" href="logo1.png" type="image/png">
-    <link rel="apple-touch-icon" href="logo1.png">
+    <title>LAFAYETTE®</title>
+    <link class="rounded-full" rel="icon" href="system/biaoqianye.png" type="image/png" sizes="32x32">
+    <link rel="apple-touch-icon" href="system/biaoqianye.png" sizes="180x180">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        :root {
+            --color-banker-navy: #0A1733;
+            --color-royal: #15294D;
+            --color-antique-gold: #B8862F;
+            --color-parchment: #E8E1D0;
+            --color-black: #050A14;
+            --color-white: #FFFFFF;
+            --header-safe-space: 40px;
+            --footer-safe-space: 40px;
+            --content-max-w: 380px;
+            --dot-max-size: 400px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--color-banker-navy);
+            color: var(--color-parchment);
+            font-family: 'Courier New', Courier, monospace;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        header, footer {
+            position: relative;
+            z-index: 100;
+            pointer-events: auto !important;
+        }
+
+        .main-wrap {
+            position: relative;
+            margin-top: var(--header-safe-space);
+            margin-bottom: var(--footer-safe-space);
+            display: grid;
+            place-items: center;
+            overflow: visible;
+            flex-grow: 1;
+            min-height: 45vh;
+        }
+
+        /* Initial opening click trigger */
+        .interaction-trigger {
+            position: absolute;
+            inset: 0;
+            z-index: 99;
+            cursor: pointer;
+            background: transparent;
+            will-change: opacity;
+        }
+
+        /* Global overlay layer */
+        .click-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 25;
+            display: none;
+            background: transparent;
+        }
+        .click-overlay.active {
+            display: block;
+        }
+
+        /* Stage 1: Intro */
+        .stage-intro {
+            text-align: center;
+            width: 100%;
+            max-width: 90vw;
+            z-index: 10;
+            user-select: none;
+            pointer-events: none;
+            will-change: transform, opacity;
+        }
+
+        .intro-stretch-elastic {
+            animation: stretchElastic 2s cubic-bezier(0.25, 1, 0.2, 1) forwards;
+        }
+
+        @keyframes stretchElastic {
+            0% { transform: scale(1); opacity: 1; }
+            70% { transform: scale(1.2, 0.7); opacity: 0.9; }
+            100% { transform: scale(0); opacity: 0; visibility: hidden; }
+        }
+
+        .barcode-container {
+            position: relative;
+            width: var(--content-max-w);
+            max-width: 90vw;
+            height: 70px;
+            background: repeating-linear-gradient(90deg,
+                var(--color-antique-gold),
+                var(--color-antique-gold) 3px,
+                transparent 3px,
+                transparent 9px
+            );
+            margin: 0 auto 40px auto;
+            opacity: 1;
+        }
+
+        .barcode-container::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background-color: var(--color-parchment);
+            left: 0;
+            top: 0;
+            box-shadow: 0 0 4px var(--color-parchment);
+            animation: scanLine 2.5s infinite ease-in-out;
+            will-change: top;
+        }
+
+        @keyframes scanLine {
+            0% { top: 0; }
+            50% { top: 100%; }
+            100% { top: 0; }
+        }
+
+        .text-timeline {
+            font-size: 2.1rem;
+            font-weight: 900;
+            width: var(--content-max-w);
+            max-width: 90vw;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 50px;
+            color: var(--color-parchment);
+            letter-spacing: 1px;
+        }
+
+        .char { opacity: 0; display: inline-block; }
+        .char.lafa { animation: fadeInChar 0.01s 1s forwards; }
+        .char.yette { animation: fadeInChar 0.01s 2s forwards; }
+        .char.pipe {
+            animation: fadeInChar 0.01s 3s forwards, blinkPipe 0.5s infinite 3s;
+            margin: 0 10px;
+            color: var(--color-antique-gold);
+        }
+        .char.space { animation: fadeInChar 0.01s 4s forwards; letter-spacing: 4px; }
+
+        @keyframes fadeInChar { to { opacity: 1; } }
+        @keyframes blinkPipe { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
+
+        /* Stage 2: Glitch Layer */
+        .stage-glitch {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            place-items: center;
+            text-align: center;
+            opacity: 0;
+            visibility: hidden;
+            z-index: 5;
+            user-select: none;
+            will-change: transform, opacity;
+        }
+
+        .glitch-active {
+            visibility: visible;
+            animation: fadeInGlitch 0.1s forwards, stretchElastic 2s cubic-bezier(0.25, 1, 0.2, 1) forwards;
+        }
+
+        @keyframes fadeInGlitch { to { opacity: 1; } }
+
+        .glitch-text {
+            font-size: 3rem;
+            font-weight: 900;
+            letter-spacing: 8px;
+            position: relative;
+            color: var(--color-parchment);
+            animation: twerkAnim 0.15s infinite;
+            will-change: transform;
+        }
+
+        .glitch-text::before,
+        .glitch-text::after {
+            content: 'LAFAYETTE®|SPACE';
+            position: absolute;
+            left: 0; top: 0; width: 100%;
+            background: var(--color-banker-navy);
+            will-change: clip-path, transform;
+        }
+        .glitch-text::before {
+            color: var(--color-antique-gold);
+            animation: glitchSplit1 0.3s infinite linear alternate-reverse;
+        }
+        .glitch-text::after {
+            color: var(--color-royal);
+            animation: glitchSplit2 0.3s infinite linear alternate-reverse;
+        }
+
+        @keyframes twerkAnim {
+            0% { transform: translate(0); }
+            25% { transform: translate(-3px, 2px); }
+            50% { transform: translate(3px, -2px); }
+            75% { transform: translate(-2px, -3px); }
+            100% { transform: translate(0); }
+        }
+        @keyframes glitchSplit1 {
+            0% { clip-path: inset(15% 0 45% 0); transform: skew(-3deg); }
+            100% { clip-path: inset(55% 0 10% 0); transform: skew(2deg); }
+        }
+        @keyframes glitchSplit2 {
+            0% { clip-path: inset(45% 0 15% 0); transform: skew(3deg); }
+            100% { clip-path: inset(5% 0 80% 0); transform: skew(-2deg); }
+        }
+
+        /* Stage 3: Interactive Central Dot Menu */
+        .stage-menu {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            place-items: center;
+            z-index: 30;
+            opacity: 0;
+            visibility: hidden;
+            text-align: center;
+            will-change: opacity;
+            pointer-events: none;
+        }
+
+        .menu-ready {
+            visibility: visible;
+            animation: fadeInMenu 0.01s forwards;
+        }
+        @keyframes fadeInMenu { to { opacity: 1; } }
+
+        .pixel-dot-menu {
+            width: 39px;
+            height: 39px;
+            background-color: var(--color-white);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.5s cubic-bezier(0.77, 0, 0.175, 1),
+                        border-radius 0.3s ease,
+                        background-color 0.4s ease,
+                        width 0.4s cubic-bezier(0.77, 0, 0.175, 1),
+                        height 0.4s cubic-bezier(0.77, 0, 0.175, 1);
+            will-change: transform, width, height;
+            pointer-events: auto;
+        }
+
+        .run-bounce {
+            animation: marbleBounce 2.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        @keyframes marbleBounce {
+            0% { transform: scale(0.5); }
+            15% { transform: scale(1.5); }
+            30% { transform: scale(0.35); }
+            45% { transform: scale(0.87); }
+            60% { transform: scale(0.56); }
+            75% { transform: scale(0.97); }
+            90% { transform: scale(0.9); }
+            100% { transform: scale(1); }
+        }
+
+        .menu-logo-placeholder {
+            font-size: 9px;
+            font-weight: bold;
+            color: var(--color-banker-navy);
+            white-space: nowrap;
+            position: absolute;
+            z-index: 2;
+            opacity: 0;
+        }
+        .logo-visible {
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+
+        .sub-menu-panel {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 24px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+            white-space: nowrap;
+            position: relative;
+            z-index: 1;
+            gap: 24px;
+        }
+
+        .sub-menu-panel a {
+            color: var(--color-parchment);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: bold;
+            letter-spacing: 1.5px;
+            opacity: 0;
+            transform: translateX(-15px);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .sub-menu-panel a:hover {
+            color: var(--color-antique-gold);
+        }
+
+        /* Expanded Mode Custom styling */
+        .pixel-dot-menu.expanded {
+            animation: none !important;
+            transform: scale(1) !important;
+            max-width: calc(100vw - 32px) !important;
+            background-color: var(--color-royal);
+            border: 1px solid var(--color-antique-gold);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+            cursor: default;
+        }
+
+        @media (max-width: 640px) {
+            .pixel-dot-menu.expanded {
+                max-width: calc(100vw - 24px) !important;
+            }
+            .sub-menu-panel {
+                padding: 0 16px;
+                gap: 16px;
+            }
+            .sub-menu-panel a {
+                font-size: 0.8rem;
+                letter-spacing: 1px;
+            }
+        }
+
+        .pixel-dot-menu.expanded .menu-logo-placeholder {
+            opacity: 0 !important;
+            pointer-events: none;
+        }
+
+        .pixel-dot-menu.expanded .sub-menu-panel {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .pixel-dot-menu.expanded .sub-menu-panel a {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .pixel-dot-menu.expanded .sub-menu-panel a:nth-child(1) { transition-delay: 0.1s; }
+        .pixel-dot-menu.expanded .sub-menu-panel a:nth-child(2) { transition-delay: 0.2s; }
+        .pixel-dot-menu.expanded .sub-menu-panel a:nth-child(3) { transition-delay: 0.3s; }
+
+        /* QR Platform styling */
+        .platform-qr {
+            position: absolute;
+            bottom: calc(100% + 12px);
+            left: 0;
+            width: 180px;
+            height: 180px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 50;
+            pointer-events: none;
+        }
+        .platform-qr.is-open {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+        .qr-box {
+            width: 100%;
+            height: 100%;
+            border: 1px solid #262626;
+            background-color: #0a0a0a;
+            padding: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .qr-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        /* Stage 4: Second-Level Dynamic Workspace Panel (Reference Style Grid) */
+        .stage-workspace {
+            position: fixed;
+            inset: 0;
+            background-color: var(--color-banker-navy);
+            z-index: 200;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s cubic-bezier(0.77, 0, 0.175, 1), visibility 0.5s;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem 1.5rem;
+        }
+
+        .stage-workspace.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Premium Reference Hover-grid container rules */
+        .container-inner {
+            width: 100%;
+            max-width: 1200px;
+            margin: 2rem auto;
+        }
+
+        .container-inner ul {
+            display: grid;
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+            gap: 1.5rem;
+            list-style: none;
+        }
+
+        @media (min-width: 768px) {
+            .container-inner ul {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .container-inner ul {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+
+        /* Beautiful interactive list items using CSS properties */
+        .container-inner ul li {
+            position: relative;
+            background-color: var(--color-royal);
+            border: 1px solid rgba(184, 134, 47, 0.2);
+            border-radius: 8px;
+            overflow: hidden;
+            min-height: 200px;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .container-inner ul li:hover {
+            transform: translateY(-8px);
+            border-color: var(--color-antique-gold);
+            box-shadow: 0 12px 30px rgba(184, 134, 47, 0.3);
+        }
+
+        /* Card Cover / Geometric Art Pattern */
+        .card-cover {
+            position: absolute;
+            inset: 0;
+            opacity: 0.15;
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container-inner ul li:hover .card-cover {
+            opacity: 0.35;
+        }
+
+        /* Standardized Header/Tag per Card */
+        .card-meta {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            right: 1rem;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            color: var(--color-antique-gold);
+            letter-spacing: 2px;
+            z-index: 5;
+        }
+
+        .card-title-main {
+            position: absolute;
+            top: 2.5rem;
+            left: 1rem;
+            font-size: 1.25rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            color: var(--color-parchment);
+            z-index: 5;
+            transition: color 0.3s ease;
+        }
+
+        .container-inner ul li:hover .card-title-main {
+            color: var(--color-white);
+        }
+
+        /* Reference style expanding info box */
+        .info {
+            background-color: rgba(5, 10, 20, 0.9);
+            backdrop-filter: blur(4px);
+            border-top: 1px solid var(--color-antique-gold);
+            padding: 1.25rem;
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.77, 0, 0.175, 1);
+            z-index: 10;
+            width: 100%;
+        }
+
+        .container-inner ul li:hover .info {
+            transform: translateY(0);
+        }
+
+        .info p {
+            font-size: 0.75rem;
+            line-height: 1.5;
+            color: var(--color-parchment);
+            margin: 0;
+            text-align: left;
+        }
+
+        .info .info-action {
+            display: inline-block;
+            margin-top: 0.75rem;
+            font-size: 0.7rem;
+            font-weight: bold;
+            color: var(--color-antique-gold);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            border-bottom: 1px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .info .info-action:hover {
+            color: var(--color-white);
+            border-bottom-color: var(--color-white);
+        }
+    </style>
 </head>
-<body class="bg-[#0a0a0a] text-[#f5f5f5] font-sans antialiased selection:bg-[#f5f5f5] selection:text-[#0a0a0a] h-full min-h-screen">
+<body>
+    <header class="w-full flex justify-between items-start border-b border-[#262626] pb-6 mb-4 p-6 md:p-12 lg:p-20">
+        <div>
+            <h1 class="text-xl md:text-2xl font-black tracking-tighter text-[#f5f5f5]">YETTE®</h1>
+            <p class="text-xs text-[#737373] mt-1 tracking-widest font-mono">DESIGNS & E-COMMERCE</p>
+        </div>
+        <div class="text-right font-mono text-xs text-[#a3a3a3] space-y-1">
+            <div>[ STATUS : ACTIVE ]</div>
+            <div class="text-[#737373]">EST. 2026</div>
+        </div>
+    </header>
 
-    <!-- 全局包装器：控制Studio Rotate标志性的宽边距留白 -->
-    <div class="h-full min-h-screen p-6 md:p-12 lg:p-20 flex flex-col justify-between">
+    <div class="main-wrap">
+        <div class="interaction-trigger" onclick="handleGlobalClick(this)"></div>
+        <div class="click-overlay" id="menuOverlay" onclick="handleBlankAreaClick(event)"></div>
 
-        <!-- ==================== HEADER (顶部导航与状态) ==================== -->
-        <header class="w-full flex justify-between items-start border-b border-[#262626] pb-6 mb-16">
-            <div>
-                <!-- 标志性的大字重、全大写纯文字Logo -->
-                <h1 class="text-xl md:text-2xl font-black tracking-tighter">YETTE®</h1>
-                <p class="text-xs text-[#737373] mt-1 tracking-widest font-mono">DESIGNS & E-COMMERCE</p>
+        <!-- Stage 1: Opening barcode scan intro -->
+        <div class="stage-intro" id="introStage">
+            <div class="barcode-container"></div>
+            <div class="text-timeline">
+                <span class="char lafa">LAFA</span>
+                <span class="char yette">YETTE®</span>
+                <span class="char pipe">|</span>
+                <span class="char space">SPACE</span>
             </div>
-            <div class="text-right font-mono text-xs text-[#a3a3a3] space-y-1">
-                <div>[ STATUS : ACTIVE ]</div>
-                <div class="text-[#737373]">EST. 2026</div>
-            </div>
-        </header>
-
-        <!-- ==================== MAIN CONTENT (核心视觉与宣言) ==================== -->
-        <main class="flex-grow flex flex-col justify-center max-w-5xl">
-            <!-- Studio Rotate 核心：震撼人心的巨型排版 -->
-            <h2 class="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight leading-none uppercase mb-12">
-                Shaping the <br>
-                <span class="text-[#737373] hover:text-[#f5f5f5] transition-colors duration-500">future visual</span> <br>
-                environments.
-            </h2>
-
-            <!-- 网格化内容区：2列布局（左：简介 / 右：核心方向） -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 border-t border-[#262626] pt-8 max-w-4xl">
-                <div>
-                    <p class="text-base md:text-lg text-[#d4d4d4] leading-relaxed font-light">
-                        通过一点点技术、高级包装美学与数字化媒介，构建品牌在线上生态的极致视觉体验。不随波逐流，也不定义规则。
-                    </p>
         </div>
 
-                <!-- 核心方向（带交互的标签） -->
-                <div class="space-y-4 font-mono text-sm">
-                    <div class="flex items-center justify-between border-b border-[#171717] pb-2 group cursor-pointer">
-                        <span class="text-[#737373] group-hover:text-[#f5f5f5] transition-colors">01 / COMFYUI ENVIRONMENT</span>
-                        <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">⚡</span>
+        <!-- Stage 2: Aesthetic glitch display -->
+        <div class="stage-glitch" id="glitchStage">
+            <div class="glitch-text">LAFAYETTE®|SPACE</div>
+        </div>
+
+        <!-- Stage 3: Interactive central dot -->
+        <div class="stage-menu" id="menuStage">
+            <div class="pixel-dot-menu" id="pixelMenu" onclick="openMenu(event)">
+                <span class="menu-logo-placeholder" id="menuLogo">MENU</span>
+                <div class="sub-menu-panel" id="subMenuPanel">
+                    <a href="#Large" onclick="event.stopPropagation(); launchWorkspace('files');">Large</a>
+                    <a href="#Fabric" onclick="event.stopPropagation(); launchWorkspace('pictures');">Fabric</a>
+                    <a href="#Yette" onclick="event.stopPropagation(); launchWorkspace('videos');">Yette</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stage 4: Dynamic Second-level Reference Workspace Section -->
+    <div id="workspaceStage" class="stage-workspace">
+        <div class="max-w-6xl w-full mx-auto flex flex-col justify-between flex-grow">
+            <div>
+                <!-- Panel Header -->
+                <div class="flex justify-between items-center border-b border-[#262626] pb-6 mb-8">
+                    <div>
+                        <h2 id="workspaceTitle" class="text-xl md:text-2xl font-black text-white tracking-widest uppercase">LARGE // SYSTEM FILES</h2>
+                        <p id="workspaceSubtitle" class="text-xs text-[#737373] tracking-widest mt-1">WORKSPACE REPOSITORY</p>
                     </div>
-                    <div class="flex items-center justify-between border-b border-[#171717] pb-2 group cursor-pointer">
-                        <span class="text-[#737373] group-hover:text-[#f5f5f5] transition-colors">02 / DESIGN & ART DIRECTIONs</span>
-                        <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">🥃</span>
+                    <button onclick="closeWorkspace()" class="text-xs border border-[#b8862f] text-[#b8862f] hover:bg-[#b8862f] hover:text-white px-4 py-2 rounded transition-all cursor-pointer font-bold tracking-widest">
+                        [ ESC / CLOSE ]
+                    </button>
+                </div>
+
+                <!-- Hover Grid Content Area -->
+                <div class="container-inner">
+                    <ul id="workspaceGrid">
+                        <!-- Dynamically filled with premium cards -->
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Panel Footer -->
+            <div class="border-t border-[#262626] pt-6 mt-12 text-center text-xs text-[#737373]">
+                <p>LAFAYETTE SYSTEM LABORATORY // SECURE DIGITAL WORKPLACE</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="w-full grid grid-cols-1 md:grid-cols-3 gap-8 border-t border-[#262626] pt-8 mt-4 p-6 md:p-12 lg:p-20 text-xs font-mono text-[#737373]">
+        <div class="overflow-visible">
+            <span class="block text-[#a3a3a3] mb-2 uppercase tracking-wider">// PLATFORMS</span>
+            <div class="relative inline-flex gap-6 overflow-visible platform-links">
+                <button type="button" data-platform="douyin" class="hover:text-[#f5f5f5] transition-colors cursor-pointer bg-transparent border-0 p-0 font-inherit text-inherit tracking-wider">DOUYIN</button>
+                <button type="button" data-platform="wechat" class="hover:text-[#f5f5f5] transition-colors cursor-pointer bg-transparent border-0 p-0 font-inherit text-inherit tracking-wider">WECHAT</button>
+                
+                <div data-qr="douyin" class="platform-qr">
+                    <div class="qr-box">
+                        <img src="system/douyin.png" alt="Douyin QR Code">
                     </div>
-                    <div class="flex items-center justify-between border-b border-[#171717] pb-2 group cursor-pointer">
-                        <span class="text-[#737373] group-hover:text-[#f5f5f5] transition-colors">03 / DIGITAL HUMAN LABS</span>
-                        <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">👤</span>
+                </div>
+                <div data-qr="wechat" class="platform-qr">
+                    <div class="qr-box">
+                        <img src="system/wechat.png" alt="WeChat QR Code">
                     </div>
                 </div>
             </div>
-        </main>
-
-        <!-- ==================== FOOTER (底部链接与行动呼吁) ==================== -->
-        <footer class="w-full grid grid-cols-1 md:grid-cols-3 gap-8 border-t border-[#262626] pt-8 mt-20 text-xs font-mono text-[#737373]">
-            <!-- 链接 1 -->
-            <div class="overflow-visible">
-                <span class="block text-[#a3a3a3] mb-2 uppercase tracking-wider">// PLATFORMS</span>
-                <div class="relative inline-flex gap-6 overflow-visible platform-links">
-                    <button type="button" data-platform="douyin" class="peer/douyin hover:text-[#f5f5f5] transition-colors cursor-pointer bg-transparent border-0 p-0 font-inherit text-inherit">DOUYIN</button>
-                    <button type="button" data-platform="wechat" class="peer/wechat hover:text-[#f5f5f5] transition-colors cursor-pointer bg-transparent border-0 p-0 font-inherit text-inherit">WECHAT</button>
-                    <div data-qr="douyin" class="platform-qr absolute bottom-full left-0 mb-3 w-full opacity-0 invisible peer-hover/douyin:opacity-100 peer-hover/douyin:visible transition-all duration-300 translate-y-2 peer-hover/douyin:translate-y-0 pointer-events-none z-20">
-                        <div class="relative w-full pt-[100%] border border-[#262626] bg-[#0a0a0a] overflow-hidden">
-                            <img src="douyin.png" alt="Douyin QR Code" class="absolute inset-0 size-full object-cover max-w-none">
-                        </div>
-                    </div>
-                    <div data-qr="wechat" class="platform-qr absolute bottom-full left-0 mb-3 w-full opacity-0 invisible peer-hover/wechat:opacity-100 peer-hover/wechat:visible transition-all duration-300 translate-y-2 peer-hover/wechat:translate-y-0 pointer-events-none z-20">
-                        <div class="relative w-full pt-[100%] border border-[#262626] bg-[#0a0a0a] overflow-hidden">
-                            <img src="wechat.png" alt="WeChat QR Code" class="absolute inset-0 size-full object-cover max-w-none">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- 链接 2 -->
-            <div>
-                <span class="block text-[#a3a3a3] mb-2 uppercase tracking-wider">// CODE LABS</span>
-                <a href="https://github.com/LaFaYettelll" target="_blank" class="hover:text-[#f5f5f5] transition-colors underline decoration-[#404040] hover:decoration-[#f5f5f5]">
-                    GITHUB.COM/LAFAYETTELLL
-                </a>
-            </div>
-            <!-- 版权声明 -->
-            <div class="md:text-right flex flex-col justify-end">
-                <p>© 2026 YETTE. POWERED BY TOY'S. ALL RIGHTS RESERVED.</p>
-            </div>
-        </footer>
-
         </div>
+        <div class="md:text-center">
+            <span class="block text-[#a3a3a3] mb-2 uppercase tracking-wider">// CODE LABS</span>
+            <a href="https://github.com/LaFaYettelll" target="_blank" class="hover:text-[#f5f5f5] transition-colors underline decoration-[#404040] hover:decoration-[#f5f5f5]">
+                GITHUB.COM/LAFAYETTELLL
+            </a>
+        </div>
+        <div class="md:text-right flex flex-col justify-end">
+            <p>© 2026 YETTE. POWERED BY TOY'S. ALL RIGHTS RESERVED.</p>
+        </div>
+    </footer>
 
     <script>
+        const pixelMenu = document.getElementById('pixelMenu');
+        const menuLogo = document.getElementById('menuLogo');
+        const menuStage = document.getElementById('menuStage');
+        const introStage = document.getElementById('introStage');
+        const glitchStage = document.getElementById('glitchStage');
+        const overlay = document.getElementById('menuOverlay');
+        const subMenuPanel = document.getElementById('subMenuPanel');
+        const workspaceStage = document.getElementById('workspaceStage');
+        const workspaceTitle = document.getElementById('workspaceTitle');
+        const workspaceSubtitle = document.getElementById('workspaceSubtitle');
+        const workspaceGrid = document.getElementById('workspaceGrid');
+
+        const rootStyle = getComputedStyle(document.documentElement);
+        const baseDotSize = 39;
+        const maxDotSize = parseFloat(rootStyle.getPropertyValue('--dot-max-size'));
+        const maxScale = maxDotSize / baseDotSize;
+
+        let currentScale = 1;
+        let clickCount = 0;
+        const maxClickCount = 5;
+        const stepScale = (maxScale - 1) / maxClickCount;
+
+        // Custom SVGs representing procedural patterns for covers
+        const svgPatterns = {
+            files: `<svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
+                      <defs>
+                        <pattern id="grid-pattern" width="10" height="10" patternUnits="userSpaceOnUse">
+                          <path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(184,134,47,0.15)" stroke-width="0.5"/>
+                        </pattern>
+                      </defs>
+                      <rect width="100%" height="100%" fill="url(#grid-pattern)" />
+                    </svg>`,
+            pictures: `<svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
+                        <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(184,134,47,0.15)" stroke-width="1" stroke-dasharray="2,2"/>
+                        <circle cx="50" cy="50" r="30" fill="none" stroke="rgba(184,134,47,0.1)" stroke-width="0.5"/>
+                        <circle cx="50" cy="50" r="20" fill="none" stroke="rgba(184,134,47,0.2)" stroke-width="1"/>
+                        <line x1="50" y1="10" x2="50" y2="90" stroke="rgba(184,134,47,0.1)" stroke-width="0.5"/>
+                        <line x1="10" y1="50" x2="90" y2="50" stroke="rgba(184,134,47,0.1)" stroke-width="0.5"/>
+                      </svg>`,
+            videos: `<svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
+                       <path d="M 0,50 Q 25,10 50,50 T 100,50" fill="none" stroke="rgba(184,134,47,0.2)" stroke-width="1"/>
+                       <path d="M 0,40 Q 25,80 50,40 T 100,40" fill="none" stroke="rgba(184,134,47,0.1)" stroke-width="0.5"/>
+                     </svg>`
+        };
+
+        // Simulated High-end Catalog Data
+        const database = {
+            files: [
+                { title: 'SPEC_098_X', tag: 'PDF / SHEETS', meta: 'SIZE: 1.4MB', linkText: 'OPEN SHEETS', desc: 'Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat.' },
+                { title: 'CORE_FAB_TECH', tag: 'DOC / MANIFEST', meta: 'SIZE: 2.1MB', linkText: 'READ MANIFEST', desc: 'Curabitur vitae eleifend arcu. Phasellus rhoncus, ex ac dictum pretium, magna augue maximus purus, vitae pulvinar ex sem in diam.' },
+                { title: 'E-COMM_FLOW_2026', tag: 'XLS / CHART', meta: 'SIZE: 840KB', linkText: 'EXPLORE DATA', desc: 'Mauris eget lorem in leo interdum eleifend ut non leo. Etiam id dolor vitae arcu tincidunt lacinia at eu tellus.' },
+                { title: 'ARCHITECTURE_DIG', tag: 'ZIP / SOURCE', meta: 'SIZE: 12.8MB', linkText: 'DOWNLOAD ZIP', desc: 'Nam imperdiet lectus a erat feugiat rhoncus. Cras sit amet mollis magna. Aliquam nec nulla ut mi congue sodales et in.' },
+                { title: 'LEGAL_REPRESENT', tag: 'PDF / CERT', meta: 'SIZE: 412KB', linkText: 'VERIFY SECURE', desc: 'Fusce eget dictum felis. In hendrerit arcu leo, non congue lacus tincidunt ac. Nunc ultrices augue in nulla dictum.' },
+                { title: 'LAFAYETTE_BRAND_V1', tag: 'PPT / PRESENT', meta: 'SIZE: 18.5MB', linkText: 'VIEW SLIDES', desc: 'Proin elementum, nunc sed molestie convallis, sem tortor lacinia sem, eu imperdiet mi risus quis velit. Integer feugiat.' }
+            ],
+            pictures: [
+                { title: 'ANTIQUE_GOLD_WEAVE', tag: 'RAW / ARCHIVE', meta: '3840 x 2160', linkText: 'VIEW PICTURE', desc: 'Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat.' },
+                { title: 'BANKER_NAVY_TEXTURE', tag: 'PNG / TEXTURE', meta: '2048 x 2048', linkText: 'ZOOM TEXTURE', desc: 'Vivamus id lorem accumsan, posuere mi nec, elementum leo. Morbi vitae magna volutpat, euismod magna, fringilla ipsum.' },
+                { title: 'PARCHMENT_MOCKUP', tag: 'PSD / TEMPLATE', meta: '4500 x 3000', linkText: 'DOWNLOAD PSD', desc: 'Aenean ac justo at lectus rhoncus elementum. Quisque sollicitudin pellentesque velit sit amet congue. Cras cursus.' },
+                { title: 'LAFAYETTE_SATELLITE', tag: 'JPG / PHOTO', meta: '1920 x 1080', linkText: 'VIEW MAP', desc: 'Aenean vel facilisis nibh. Phasellus quis elementum leo. Proin lacinia dictum tellus, quis pellentesque nulla tempor.' },
+                { title: 'MINIMAL_APPAREL_A', tag: 'RAW / MOCKUP', meta: '4000 x 5000', linkText: 'OPEN MOCKUP', desc: 'Sed luctus tristique ante tincidunt fermentum. Ut feugiat diam at elit egestas eleifend. Morbi eget hendrerit elit.' },
+                { title: 'MINIMAL_APPAREL_B', tag: 'RAW / MOCKUP', meta: '4000 x 5000', linkText: 'OPEN MOCKUP', desc: 'Phasellus at hendrerit magna, vel tristique diam. Nam id odio quis ex efficitur lobortis vel non sem. Phasellus eget.' }
+            ],
+            videos: [
+                { title: 'RUNWAY_MOMENT_I', tag: 'MP4 / 4K', meta: 'DURATION: 01:45', linkText: 'PLAY STREAM', desc: 'Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat.' },
+                { title: 'PROCESS_DOCUMENTATION', tag: 'MOV / H264', meta: 'DURATION: 05:22', linkText: 'WATCH REEL', desc: 'Nunc quis ligula nec tortor vehicula lacinia. Proin id lectus in turpis feugiat placerat porta non arcu. Aliquam id.' },
+                { title: 'EDITORIAL_CAMPAIGN', tag: 'MP4 / 1080P', meta: 'DURATION: 00:30', linkText: 'PLAY PROMO', desc: 'Suspendisse potenti. In vel tempor arcu, in pellentesque velit. Donec ac magna a augue scelerisque placerat non at.' },
+                { title: 'TEXTURE_IN_MOTION', tag: 'MP4 / LOOP', meta: 'DURATION: 00:15', linkText: 'STREAM LOOP', desc: 'Vestibulum ut vulputate libero. Cras imperdiet sem lectus, ac placerat lectus consequat nec. Ut iaculis dictum diam.' }
+            ]
+        };
+
+        // Open Intro animation sequences
+        function handleGlobalClick(triggerElement) {
+            triggerElement.remove();
+            introStage.classList.add('intro-stretch-elastic');
+            glitchStage.classList.add('glitch-active');
+
+            setTimeout(() => {
+                menuStage.classList.add('menu-ready');
+                pixelMenu.classList.add('run-bounce');
+                setTimeout(() => {
+                    pixelMenu.classList.remove('run-bounce');
+                    menuLogo.classList.add('logo-visible');
+                }, 2500);
+            }, 2000);
+        }
+
+        // Open dot menu
+        function openMenu(event) {
+            if (pixelMenu.classList.contains('expanded')) {
+                event.stopPropagation();
+                return;
+            }
+            event.stopPropagation();
+            
+            const isMobile = window.innerWidth <= 640;
+            const currentDotDiameter = baseDotSize * currentScale;
+            const targetHeight = currentDotDiameter;
+            
+            subMenuPanel.style.display = 'flex';
+            subMenuPanel.style.opacity = '0';
+            subMenuPanel.style.position = 'absolute';
+            const naturalWidth = subMenuPanel.scrollWidth + (isMobile ? 32 : 48);
+            subMenuPanel.style.display = '';
+            subMenuPanel.style.opacity = '';
+            subMenuPanel.style.position = '';
+            
+            const safetyMargin = isMobile ? 24 : 48;
+            const maxAllowedWidth = window.innerWidth - safetyMargin;
+            let targetWidth = Math.max(naturalWidth, currentDotDiameter);
+            if (targetWidth > maxAllowedWidth) {
+                targetWidth = maxAllowedWidth;
+            }
+            
+            pixelMenu.style.transform = 'none';
+            pixelMenu.style.width = `${targetWidth}px`;
+            pixelMenu.style.height = `${targetHeight}px`;
+            pixelMenu.style.borderRadius = `${targetHeight / 2}px`;
+            
+            pixelMenu.classList.add('expanded');
+            overlay.classList.add('active');
+        }
+
+        // Shrink back to simple dot layout
+        function shrinkAndGrowDot() {
+            if (!pixelMenu.classList.contains('expanded')) return;
+            
+            pixelMenu.classList.remove('expanded');
+            overlay.classList.remove('active');
+
+            if (clickCount < maxClickCount) {
+                currentScale += stepScale;
+                currentScale = Math.min(currentScale, maxScale);
+                clickCount++;
+            }
+            
+            pixelMenu.style.width = '';
+            pixelMenu.style.height = '';
+            pixelMenu.style.borderRadius = '';
+            pixelMenu.style.transform = `scale(${currentScale})`;
+        }
+
+        // Handle space clicks
+        function handleBlankAreaClick(event) {
+            event.preventDefault();
+            shrinkAndGrowDot();
+            if (window.closeAllQrs) {
+                window.closeAllQrs();
+            }
+        }
+
+        // Launch Second-level Workspace Panel (files, pictures, videos)
+        function launchWorkspace(category) {
+            shrinkAndGrowDot();
+            
+            // Set dynamic text matching category
+            if (category === 'files') {
+                workspaceTitle.innerText = "LARGE // DIGITAL ARCHIVE";
+                workspaceSubtitle.innerText = "DOCUMENTS / SOURCECODE / SPECS";
+            } else if (category === 'pictures') {
+                workspaceTitle.innerText = "FABRIC // GRAPHICAL MOCKUPS";
+                workspaceSubtitle.innerText = "VISUAL TEXTURES / PHOTOGRAPHY / CAD";
+            } else if (category === 'videos') {
+                workspaceTitle.innerText = "YETTE // REELS & ARCHIVES";
+                workspaceSubtitle.innerText = "BRAND DOCUMENTARIES / RUNWAY / LOOPS";
+            }
+
+            // Create Grid List items using requested format
+            const items = database[category] || [];
+            let gridHTML = '';
+            items.forEach((item, index) => {
+                gridHTML += `
+                    <li>
+                        <div class="card-cover">
+                            ${svgPatterns[category]}
+                        </div>
+                        <div class="card-meta">
+                            <span>${item.tag}</span>
+                            <span>${item.meta}</span>
+                        </div>
+                        <div class="card-title-main">${item.title}</div>
+                        <div class="info">
+                            <p>${item.desc}</p>
+                            <span class="info-action">${item.linkText} →</span>
+                        </div>
+                    </li>
+                `;
+            });
+            workspaceGrid.innerHTML = gridHTML;
+
+            // Make panel visible
+            workspaceStage.classList.add('active');
+        }
+
+        // Dismiss the workspace
+        function closeWorkspace() {
+            workspaceStage.classList.remove('active');
+        }
+
+        // QR platform interactive enclosure
         (function () {
             const platformLinks = document.querySelector('.platform-links');
             if (!platformLinks) return;
 
             const qrs = platformLinks.querySelectorAll('.platform-qr');
             const buttons = platformLinks.querySelectorAll('[data-platform]');
+            let lockedPlatform = null;
 
-            function closeAll() {
-                qrs.forEach((qr) => qr.classList.remove('is-open'));
-                buttons.forEach((btn) => btn.classList.remove('text-[#f5f5f5]'));
+            function closeAllQrs() {
+                qrs.forEach(qr => qr.classList.remove('is-open'));
+                buttons.forEach(btn => {
+                    if (btn.dataset.platform !== lockedPlatform) {
+                        btn.classList.remove('text-[#f5f5f5]');
+                    }
+                });
+                lockedPlatform = null;
+            }
+            window.closeAllQrs = closeAllQrs;
+
+            function openQr(platform) {
+                qrs.forEach(qr => qr.classList.remove('is-open'));
+                buttons.forEach(btn => {
+                    if (btn.dataset.platform !== lockedPlatform) {
+                        btn.classList.remove('text-[#f5f5f5]');
+                    }
+                });
+
+                const qr = platformLinks.querySelector(`[data-qr="${platform}"]`);
+                const btn = platformLinks.querySelector(`[data-platform="${platform}"]`);
+                if (qr) qr.classList.add('is-open');
+                if (btn) btn.classList.add('text-[#f5f5f5]');
             }
 
-            function openQr(name) {
-                const qr = platformLinks.querySelector(`[data-qr="${name}"]`);
-                const btn = platformLinks.querySelector(`[data-platform="${name}"]`);
-                if (!qr) return;
-                closeAll();
-                qr.classList.add('is-open');
-                btn?.classList.add('text-[#f5f5f5]');
-            }
+            buttons.forEach(btn => {
+                const platform = btn.dataset.platform;
 
-            buttons.forEach((btn) => {
+                btn.addEventListener('mouseenter', () => {
+                    if (!lockedPlatform) {
+                        openQr(platform);
+                    }
+                });
+
+                btn.addEventListener('mouseleave', () => {
+                    if (!lockedPlatform) {
+                        closeAllQrs();
+                    }
+                });
+
                 btn.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    const name = btn.dataset.platform;
-                    const qr = platformLinks.querySelector(`[data-qr="${name}"]`);
-                    if (qr?.classList.contains('is-open')) {
-                        closeAll();
+                    if (lockedPlatform === platform) {
+                        closeAllQrs();
                     } else {
-                        openQr(name);
+                        lockedPlatform = platform;
+                        openQr(platform);
+                        overlay.classList.add('active');
                     }
                 });
             });
 
-            document.addEventListener('click', () => closeAll());
+            document.addEventListener('click', (e) => {
+                if (!platformLinks.contains(e.target)) {
+                    closeAllQrs();
+                }
+            });
         })();
     </script>
-    <style>
-        .platform-qr.is-open {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-    </style>
-
 </body>
 </html>
